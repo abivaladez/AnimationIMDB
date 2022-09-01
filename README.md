@@ -3,7 +3,7 @@ Exploration and visualization of the top animated movies on IMDB, dataset by Tar
 
 The exploration and visualization were made with R, SQL and Tableau, this in order to build skills.
 
-# R
+# 💾 R
 
 Made in Rstudio using
 
@@ -13,11 +13,11 @@ Made in Rstudio using
 * viridis
 * hrbrthemes
 
-# T-SQL
+# 💻 T-SQL
 
 Made in Microsoft SQL Server 2019, the query results were saved in multiple .csv files and then imported to Tableau
 
-# Tableau
+# 📊 Tableau
 
 Visualizations made in Tableau Public from the SQL query results
 
