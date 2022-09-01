@@ -13,7 +13,7 @@ Made in Rstudio using
 
 # 💻 T-SQL
 
-Made in Microsoft SQL Server 2019, the query results were saved in multiple .csv files and then imported to Tableau
+Made in Microsoft SQL Server 2019, the query results were exported to multiple .csv files
 
 # 📊 Tableau
 
