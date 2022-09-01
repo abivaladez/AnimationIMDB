@@ -1,0 +1,133 @@
+---
+title: 'Animated Movies: IMDB'
+author: 'Abigail Valadez'
+date: '2022-08-31'
+output: pdf_document
+---
+```{r echo= FALSE}
+knitr::opts_chunk$set(tidy.opts = list(width.cutoff = 40), tidy = TRUE,echo=TRUE)
+
+```
+# Introducción
+
+En este trabajo se analizarán y visualizarán los datos del _dataset_ [**`TopAnimatedImDb.csv`**](https://www.kaggle.com/datasets/tarundalal/animated-movies-imdb).
+
+# Carga de librerías y dataset
+
+```{r load}
+library(dplyr)
+library(ggplot2)
+library(tidyr)
+library(RColorBrewer)
+library(viridis)
+library(hrbrthemes)
+#dataset <- read.csv('TopAnimatedImDb.csv')
+
+```
+
+# Exploración de datos
+
+Visualizamos las primeras y últimas filas del _dataset_, al igual que los nombres de las columnas para darnos una idea de cómo está formado nuestro _dataset_.
+
+```{r}
+names(dataset)
+head(dataset)
+tail(dataset)
+```
+
+De inmediato vemos que hay películas con celdas vacías, para evitar problemas con este tipo de datos, las eliminaremos.
+
+```{r}
+dataset[dataset==""] <- NA
+dataset <- na.omit(dataset)
+head(dataset)
+```
+
+Vemos que hay 11 columnas:
+
+1. Nombre
+2. Calificación
+3. Votos
+4. Ganancia
+5. Género
+6. Metascore
+7. Certificado
+8. Director
+9. Año de estreno
+10. Descripción
+11. Duración
+
+Revisando estas columnas, hay distintas preguntas que uno puede hacer:
+
+* ¿Cúantas películas hay por certificado?
+* ¿Cúal es el género favorito de los directores?
+* ¿Qué tipo películas generan más ganancias?
+* ¿De qué año y género son las películas mejor rankeadas en el _metascore_?
+
+
+Intentaremos resolver las preguntas anteriores.
+
+# Preparación de datos
+
+Eliminaré las columnas no deseadas con ayuda de **`dplyr`**.
+
+```{r}
+dataset <- select(dataset, -c(Rating,Votes,Description,Runtime,Certificate))
+names(dataset)
+```
+
+# Trabajando con los datos
+
+
+
+
+* ¿Cúal es el género favorito de los directores?
+
+```{r}
+directors_genres <- dataset %>% count(Genre, Director, sort=TRUE)
+head(directors_genres)
+```
+
+```{r}
+ggplot(directors_genres,aes(Genre, Director,size=n,color=n))+geom_point(alpha=0.5)+scale_size(range=c(1,10),name='Número de películas')+ guides(x=guide_axis(angle=90))+ scale_color_gradient(low='#F4ACB7',high='#FF5D8F')+theme_dark()+theme(legend.position='none')
+ggsave('Directors_Movies.png',height=2000,width=1800,units='px')
+```
+
+En la gráfica anterior, el tamaño es indicado por el número de películas que han hecho.
+
+* ¿Qué género películas generan más ganancias?
+
+Primero debemos cambiar el tipo de columna de ganancias.
+
+```{r}
+dataset$Gross <- as.numeric(gsub('\\$|M','',dataset$Gross))
+```
+
+```{r}
+dataset_gross <- dataset %>% group_by(Genre) %>% summarise(Promedio=mean(Gross),Total=sum(Gross),n=n())
+dataset_gross
+```
+
+```{r}
+ggplot(dataset_gross,aes(Genre,Promedio,size=Total,fill=n))+geom_point(alpha=0.5,shape=21,color='black')+scale_size(range=c(1,15),name='Total Ganado')+scale_fill_viridis(discrete=FALSE,guide='none',option='A')+theme(legend.position='bottom')+ylab('Promedio de Ganancias (M)')+xlab('Género')+theme(legend.position='none')+ guides(x=guide_axis(angle=90))
+ggsave('Gross_Genre.png',height=2000,width=1800,units='px')
+
+```
+En la gráfica anterior el tamaño de la burbuja depende del total ganado por género.
+
+
+* ¿De qué año y género son las películas mejor rankeadas en el _metascore_?
+
+```{r}
+
+genre_meta <- dataset %>% group_by(Genre,Year) %>% summarise(Promedio=mean(Metascore)) %>% arrange(Promedio)
+
+head(genre_meta)
+```
+
+```{r}
+ggplot(genre_meta,aes(Year,Promedio,color=Genre))+geom_point(alpha=0.5,size=5)+theme_gray()+ylab('Promedio de Metascore')+xlab('Año')+theme(legend.position='bottom')+theme(legend.key.size = unit(1, 'cm'))
+ggsave('Year_Meta.png',height=1500,width=2500,units='px')
+
+```
+
