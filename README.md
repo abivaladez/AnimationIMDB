@@ -1,8 +1,6 @@
 # AnimationIMDB
 Exploration and visualization of the top animated movies on IMDB, dataset by Tarun R Jain on Kaggle.
 
-The exploration and visualization were made with R, SQL and Tableau, this in order to build skills.
-
 # 💾 R
 
 Made in Rstudio using
